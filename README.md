@@ -12,7 +12,11 @@ The project is essentially a performance environment with different actors exerc
 People Involved
 ----------------------
 Drummer: Murphy Janssen
-Mechatronics: Wei Yang
+Mechatronics & laptop: Wei Yang
+
+Video
+----------------------
+https://www.youtube.com/watch?v=0ptakvkgI2s
   
 Bibiography 
 -----------
