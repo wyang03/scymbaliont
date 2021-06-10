@@ -18,6 +18,22 @@ SerialPort.closeAll;  // to close all serial port
 		{ascii==$c}{~ldr2Val = ~charArray.convertDigits; ~charArray = []}
 		{ascii==$d}{~ldr3Val = ~charArray.convertDigits; ~charArray = []}
 		{ascii==$e}{~ldr4Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$f}{~ldr5Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$g}{~ldr6Val = ~charArray.convertDigits; ~charArray = []}	
+		{ascii==$h}{~ldr7Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$i}{~ldr8Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$j}{~ldr9Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$k}{~ldr10Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$l}{~ldr11Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$m}{~ldr12Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$n}{~ldr13Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$o}{~ldr14Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$p}{~ldr15Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$q}{~ldr16Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$r}{~ldr17Val = ~charArray.convertDigits; ~charArray = []}
+		{ascii==$s}{~ldr18Val = ~charArray.convertDigits; ~charArray = [ ]}
+		{ascii==$t}{~ldr19Val = ~charArray.convertDigits; ~charArray = []}
+
 
 
 		{true}{nil};
@@ -44,17 +60,33 @@ f = CtkBuffer.playbuf("/Volumes/weiyang/voice_project/Sounds/08_bubble/6.wav").l
 
 //playback synthdef with bandpass filter and foa focus
 (
-~synth = CtkSynthDef(\plb, {|rate=1, amp=0.5, buffer=0, bpfFreq=440, rq=1.0, rotAngle=0.0, theta = 0.0, gate=1|
-	var env, sig, out;
+~synth1 = CtkSynthDef(\plb, {|rate=1, gain=0.5, buffer=0, bpfFreq=440, rq=1.0, rotAngle=0.0, theta = 0.0, gate=1, delayTime= 0.1|
+	var env, sig, out, amp;
+	amp = gain.dbamp;
 	sig = PlayBuf.ar(4, buffer, BufRateScale.kr(buffer)*rate.lag(0.1), loop: 1);
-	env = EnvGen.kr(Env.adsr, gate);
+	env = EnvGen.kr(Env.adsr(Rand(3, 10), Rand(10, 20), releaseTime: Rand(10, 20)), gate);
 	sig = BPF.ar(sig, bpfFreq.lag(0.1), rq);
+	// if(bpf==0, {sig = BPF.ar(sig, bpfFreq, rq)},{ sig});
 	sig = FoaRotate.ar(sig, rotAngle);
 	sig = FoaFocus.ar(sig, pi/3, theta);
 	out  = FoaDecode.ar(sig, ~decoder);
+	out = DelayN.ar(out, 0.2, SinOsc.ar(0.2, 0, delayTime, delayTime), mul: 0.5, add: out);
 	Out.ar(0, out *1.618* amp.lag(0.1) * env);
 })
+
+
+~synth3 = CtkSynthDef('help-dynKlang', { |outBus=0, amp = 0.1, gate=0, oscfreq=0.5,
+	freqs=#[220, 440, 880, 1760],
+	amps=#[0.35, 0.23, 0.12, 0.05],
+	phases=#[1, 1.5, 2, 2.5]|
+	var sig, env;
+	sig = DynKlang.ar(`[freqs, amps, phases]);
+	sig = sig * SinOsc.ar(LFNoise2.ar(oscfreq).range(1, 5)).dup;
+	env = EnvGen.ar(Env.adsr(Rand(5, 10), Rand(10, 20), releaseTime: Rand(10, 20)), gate);
+	Out.ar(outBus,  Pan2.ar(sig * env * amp, Rand(-1, 1), 0.5))
+})
 )
+
 
 //notes initialization, with gate set to 0 -> notes played in silence
 (
