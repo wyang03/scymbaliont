@@ -11,7 +11,8 @@ The project is essentially a performance environment with different actors exerc
 
 People Involved
 ----------------------
-Wei Yang, Murphy Janssen
+Drummer: Murphy Janssen
+Mechatronics: Wei Yang
   
 Bibiography 
 -----------
